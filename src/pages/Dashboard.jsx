@@ -104,7 +104,7 @@ function App() {
                 Delta BTC Options
               </p>
               <h1 className="mt-2 text-3xl font-semibold text-white">
-                Trading Bot Dashboard
+               Shailesh Trading Bot
               </h1>
               <p className="mt-2 max-w-2xl text-slate-400">
                 Monitor bot health, open positions, and trading performance in
