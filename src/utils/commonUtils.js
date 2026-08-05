@@ -8,7 +8,7 @@ export const formatPnl = (value) => {
   if (value === null || value === undefined) return "-";
   const amount = Number(value);
   if (Number.isNaN(amount)) return String(value);
-  return amount.toFixed(2);
+  return amount.toFixed(3);
 };
 
 export const getHealthBadge = (health) => {
