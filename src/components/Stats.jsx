@@ -9,8 +9,29 @@ const Stats = ({ summary, prevIndexPrice, status }) => {
   const renderValue = (key) => {
     if (key === "running") return status?.running ? "Running" : "Stopped";
     if (key === "unrealized_pnl") return formatPnl(summary?.unrealized_pnl);
+    if (key === "combined_pnl")
+      return formatPnl(status?.strategy_state?.combined_pnl);
+    if (key === "profit_target")
+      return formatPnl(status?.strategy_state?.profit_target);
+    if (key === "stop_loss")
+      return formatPnl(status?.strategy_state?.stop_loss);
     return summary[key] ?? "-";
   };
+
+  const getCardClass = (key) => {
+    if (key === "unrealized_pnl" || key === "combined_pnl") {
+      return getPnlClass(
+        key === "unrealized_pnl"
+          ? summary?.unrealized_pnl
+          : status?.strategy_state?.combined_pnl,
+      );
+    }
+    if (key === "index_price") {
+      return getIndexPriceClass(summary?.index_price, prevIndexPrice);
+    }
+    return "text-white";
+  };
+
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       {statCards.map((card) => (
@@ -22,13 +43,7 @@ const Stats = ({ summary, prevIndexPrice, status }) => {
             {card.label}
           </p>
           <p
-            className={`mt-4 text-3xl font-semibold ${
-              card.key === "unrealized_pnl"
-                ? getPnlClass(summary?.unrealized_pnl)
-                : card.key === "index_price"
-                  ? getIndexPriceClass(summary?.index_price, prevIndexPrice)
-                  : "text-white"
-            }`}
+            className={`mt-4 text-3xl font-semibold ${getCardClass(card.key)}`}
           >
             {renderValue(card.key)}
           </p>

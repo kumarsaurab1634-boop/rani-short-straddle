@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import PositionTable from "../components/PositionTable";
-import {
-  getPnlClass,
-  formatPnl,
-  getIndexPriceClass,
-} from "../utils/commonUtils";
+import LogsPanel from "../components/LogsPanel";
 import Overview from "../components/Overview";
 import Stats from "../components/Stats";
-import { API_BASE_URL } from "../utils/constants";
 import { fetchData, postData } from "../services/api";
 
 function App() {
@@ -20,17 +15,12 @@ function App() {
     position_count: 0,
     strategy_state: {},
   });
+  const [logs, setLogs] = useState([]);
   const [prevIndexPrice, setPrevIndexPrice] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeAction, setActiveAction] = useState("");
   const [error, setError] = useState("");
   const [lastUpdated, setLastUpdated] = useState(null);
-
-  useEffect(() => {
-    if (!status.running) {
-      handleAction("/start", "Start bot");
-    }
-  }, [status]);
 
   const loadHealth = async () => {
     const healthData = await fetchData("/health");
@@ -45,16 +35,26 @@ function App() {
   const loadSummary = async () => {
     const summaryData = await fetchData("/summary");
     setPrevIndexPrice((prev) =>
-      prev === null ? summaryData.index_price : summary.index_price,
+      prev === null ? summaryData.index_price : prev,
     );
     setSummary(summaryData);
+  };
+
+  const loadLogs = async () => {
+    const logsData = await fetchData("/logs?limit=20");
+    setLogs(logsData.logs ?? []);
   };
 
   const loadData = async () => {
     setLoading(true);
     setError("");
     try {
-      await Promise.all([loadHealth(), loadStatus(), loadSummary()]);
+      await Promise.all([
+        loadHealth(),
+        loadStatus(),
+        loadSummary(),
+        loadLogs(),
+      ]);
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load data");
@@ -104,7 +104,7 @@ function App() {
                 Delta BTC Options
               </p>
               <h1 className="mt-2 text-3xl font-semibold text-white">
-               Shailesh Trading Bot
+                Shailesh Trading Bot
               </h1>
               <p className="mt-2 max-w-2xl text-slate-400">
                 Monitor bot health, open positions, and trading performance in
@@ -114,8 +114,8 @@ function App() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => handleAction("/start", "Start bot")}
-                // disabled={loading}
-                className="rounded-full cursor-pointer px-5 py-2 text-sm font-semibold transition bg-cyan-500 text-slate-950 hover:bg-cyan-400"
+                disabled={loading}
+                className="rounded-full cursor-pointer px-5 py-2 text-sm font-semibold transition bg-cyan-500 text-slate-950 hover:bg-cyan-400 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {activeAction === "Start bot" ? "Starting..." : "Start Bot"}
               </button>
@@ -130,20 +130,7 @@ function App() {
               >
                 {activeAction === "Stop bot" ? "Stopping..." : "Stop Bot"}
               </button>
-              {/* <button
-                onClick={handleHealthCheck}
-                disabled={loading}
-                className={`rounded-full border px-5 py-2 text-sm transition ${
-                  loading
-                    ? "border-slate-700/70 text-slate-400 cursor-not-allowed"
-                    : "border-slate-700 text-slate-200 hover:border-cyan-400 hover:text-cyan-300"
-                }`}
-              >
-                {activeAction === "Health check"
-                  ? "Checking..."
-                  : "Health Check"}
-              </button> */}
-              {/* <button
+              <button
                 onClick={handleRefresh}
                 disabled={loading}
                 className={`rounded-full border px-5 py-2 text-sm transition ${
@@ -153,13 +140,17 @@ function App() {
                 }`}
               >
                 {activeAction === "Refresh" ? "Refreshing..." : "Refresh"}
-              </button> */}
+              </button>
             </div>
-            {/* {loading && activeAction && (
-              <p className="mt-3 text-sm text-slate-400">
-                {activeAction} in progress...
-              </p>
-            )} */}
+          </div>
+          {error ? (
+            <div className="mt-4 rounded-2xl bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+              {error}
+            </div>
+          ) : null}
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-400">
+            <span>Last update: {lastUpdated ?? "—"}</span>
+            <span>Polling every 2s</span>
           </div>
         </header>
         <Stats
@@ -174,6 +165,7 @@ function App() {
           prevIndexPrice={prevIndexPrice}
         />
         <PositionTable summary={summary} />
+        <LogsPanel logs={logs} />
       </div>
     </div>
   );
