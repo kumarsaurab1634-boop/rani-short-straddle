@@ -57,6 +57,10 @@ const Overview = ({ health, status, summary, prevIndexPrice }) => {
                 <span>{state.current_structure ?? "—"}</span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-slate-900/90 px-4 py-3">
+                <span className="text-slate-400">Reference strike</span>
+                <span>{state.reference_strike ?? "—"}</span>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl bg-slate-900/90 px-4 py-3">
                 <span className="text-slate-400">Strike threshold</span>
                 <span>{state.threshold ?? "—"}</span>
               </div>
