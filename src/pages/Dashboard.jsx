@@ -4,6 +4,7 @@ import LogsPanel from "../components/LogsPanel";
 import Overview from "../components/Overview";
 import Stats from "../components/Stats";
 import { fetchData, postData } from "../services/api";
+import { UI_POLL_INTERVAL_MS } from "../utils/constants";
 
 function App() {
   const [health, setHealth] = useState("unknown");
@@ -63,9 +64,11 @@ function App() {
     }
   };
 
+  const pollSeconds = Number((UI_POLL_INTERVAL_MS / 1000).toFixed(1));
+
   useEffect(() => {
     loadData();
-    const interval = setInterval(loadData, 2000);
+    const interval = setInterval(loadData, UI_POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, []);
 
@@ -150,7 +153,7 @@ function App() {
           ) : null}
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-slate-400">
             <span>Last update: {lastUpdated ?? "—"}</span>
-            <span>Polling every 2s</span>
+            <span>Polling every {pollSeconds}s</span>
           </div>
         </header>
         <Stats
