@@ -85,6 +85,12 @@ const Overview = ({ health, status, summary, prevIndexPrice }) => {
                 </span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-slate-900/90 px-4 py-3">
+                <span className="text-slate-400">Realized PnL</span>
+                <span className={getPnlClass(summary?.realized_pnl)}>
+                  {formatPnl(summary?.realized_pnl)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl bg-slate-900/90 px-4 py-3">
                 <span className="text-slate-400">Index price</span>
                 <span
                   className={getIndexPriceClass(

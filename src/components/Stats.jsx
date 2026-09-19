@@ -9,6 +9,7 @@ const Stats = ({ summary, prevIndexPrice, status }) => {
   const renderValue = (key) => {
     if (key === "running") return status?.running ? "Running" : "Stopped";
     if (key === "unrealized_pnl") return formatPnl(summary?.unrealized_pnl);
+    if (key === "realized_pnl") return formatPnl(summary?.realized_pnl);
     if (key === "combined_pnl")
       return formatPnl(status?.strategy_state?.combined_pnl);
     if (key === "profit_target")
@@ -19,11 +20,17 @@ const Stats = ({ summary, prevIndexPrice, status }) => {
   };
 
   const getCardClass = (key) => {
-    if (key === "unrealized_pnl" || key === "combined_pnl") {
+    if (
+      key === "unrealized_pnl" ||
+      key === "realized_pnl" ||
+      key === "combined_pnl"
+    ) {
       return getPnlClass(
         key === "unrealized_pnl"
           ? summary?.unrealized_pnl
-          : status?.strategy_state?.combined_pnl,
+          : key === "realized_pnl"
+            ? summary?.realized_pnl
+            : status?.strategy_state?.combined_pnl,
       );
     }
     if (key === "index_price") {
