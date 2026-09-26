@@ -66,13 +66,7 @@ const PositionTable = ({ summary }) => {
   );
 
   const renderClosedTable = () => (
-    <div className="overflow-x-auto border-t border-slate-800 p-6">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-white">Closed Positions</h3>
-        <span className="rounded-full border border-slate-700 bg-slate-950 px-3 py-1 text-xs text-slate-300">
-          {closedPositions.length} trades
-        </span>
-      </div>
+    <div className="overflow-x-auto p-6">
       <table className="min-w-full text-left text-sm text-slate-200">
         <thead className="border-b border-slate-800 text-slate-400">
           <tr>
@@ -84,13 +78,14 @@ const PositionTable = ({ summary }) => {
             <th className="px-3 py-3">Size</th>
             <th className="px-3 py-3">Entry</th>
             <th className="px-3 py-3">Closed Price</th>
+            <th className="px-3 py-3">Closed Time</th>
             <th className="px-3 py-3">Realized PnL</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
           {closedPositions.length === 0 ? (
             <tr>
-              <td colSpan="9" className="px-3 py-6 text-center text-slate-500">
+              <td colSpan="10" className="px-3 py-6 text-center text-slate-500">
                 No closed positions yet.
               </td>
             </tr>
@@ -119,6 +114,22 @@ const PositionTable = ({ summary }) => {
                 <td className="px-3 py-4">{position.size ?? "N/A"}</td>
                 <td className="px-3 py-4">{position.entry_price ?? "N/A"}</td>
                 <td className="px-3 py-4">{position.closed_price ?? "N/A"}</td>
+                <td className="px-3 py-4 whitespace-nowrap">
+                  {position.closed_time
+                    ? (() => {
+                        const dt = new Date(position.closed_time);
+                        const day = String(dt.getDate()).padStart(2, "0");
+                        const month = String(dt.getMonth() + 1).padStart(2, "0");
+                        const year = dt.getFullYear();
+                        let hours = dt.getHours();
+                        const minutes = String(dt.getMinutes()).padStart(2, "0");
+                        const meridiem = hours >= 12 ? "PM" : "AM";
+                        hours = hours % 12 || 12;
+                        const formattedHours = String(hours).padStart(2, "0");
+                        return `${day}/${month}/${year}, ${formattedHours}:${minutes}${meridiem}`;
+                      })()
+                    : "N/A"}
+                </td>
                 <td
                   className={`px-3 py-4 ${getPnlClass(position.realized_pnl)}`}
                 >
@@ -141,6 +152,13 @@ const PositionTable = ({ summary }) => {
         </p>
       </div>
       {renderOpenTable()}
+
+      <div className="border-t border-slate-800 bg-slate-950/90 px-6 py-4">
+        <h2 className="text-xl font-semibold text-white">Closed Positions</h2>
+        <p className="mt-1 text-sm text-slate-400">
+          Closed option legs and realized PnL history.
+        </p>
+      </div>
       {renderClosedTable()}
     </section>
   );
