@@ -77,9 +77,9 @@ const PositionTable = ({ summary }) => {
             <th className="px-3 py-3">Side</th>
             <th className="px-3 py-3">Size</th>
             <th className="px-3 py-3">Entry</th>
-            <th className="px-3 py-3">Closed Price</th>
+            <th className="px-3 py-3 whitespace-nowrap">Closed Price</th>
             <th className="px-3 py-3">Closed Time</th>
-            <th className="px-3 py-3">Realized PnL</th>
+            <th className="px-3 py-3 whitespace-nowrap">Realized PnL</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-800">
